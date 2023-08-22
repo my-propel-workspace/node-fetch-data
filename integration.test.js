@@ -1,29 +1,23 @@
+const fetchData = require('./fetch-data'); // Assuming you have a fetch-data.js module
 const request = require('supertest');
-const dataManager = require('./data-manager');
-const { app, server } = require('./index');
+const { app, server, fetchDataAndUpdate } = require('./index-one');
+
+jest.mock('./fetch-data');
 
 describe('/metrics endpoint', () => {
-  let fetchDataAndUpdateMock;
 
-  beforeAll(() => {
-    jest.useRealTimers(); // Use real timers for this test suite
-    fetchDataAndUpdateMock = jest.spyOn(dataManager, 'fetchDataAndUpdate').mockResolvedValue();
-  });
+    afterAll((done) => {
+        server.close(done);
+    });
 
-  afterAll((done) => {
-    jest.useFakeTimers(); // Restore default behavior after the test suite
-    fetchDataAndUpdateMock.mockRestore();
-    server.close(done); // Close the server after all tests are done
-  });
+    it('should return fetched data', async () => {
+        const mockFetchedData = { metric: 'value' };
+        fetchData.mockResolvedValue(mockFetchedData);
+        await fetchDataAndUpdate();
 
-  it('should return fetched data', async () => {
-    const testData = { metric: 'value' };
-    jest.spyOn(dataManager, 'getData').mockReturnValue(testData);
+        const response = await request(app).get('/metrics');
 
-    const response = await request(app).get('/metrics');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(testData);
-    expect(dataManager.getData).toHaveBeenCalledTimes(1);
-  });
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(mockFetchedData);
+    });
 });
