@@ -3,7 +3,7 @@ const axios = require('axios');
 async function fetchData() {
     try {
       const response = await axios.get('https://dummyjson.com/products/1'); // Replace with your actual API URL
-      return response.data;
+      return response.data ? response.data : null;
     } catch (error) {
       throw new Error(`Error fetching data: ${error.message}`);
     }
