@@ -17,7 +17,7 @@ const fetchDataAndUpdate = async () => {
 };
 fetchDataAndUpdate();
 const fetchInterval = 10000;
-setInterval(fetchDataAndUpdate, fetchInterval);
+const intervalId = setInterval(fetchDataAndUpdate, fetchInterval);
 
 app.get('/metrics', async (req, res) => {
   if ( data ){
@@ -39,5 +39,6 @@ const server = app.listen(port, () => {
 module.exports = {
   app,
   server,
-  fetchDataAndUpdate
+  fetchDataAndUpdate,
+  intervalId
 };
