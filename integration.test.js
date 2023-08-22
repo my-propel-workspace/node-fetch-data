@@ -1,13 +1,12 @@
-const fetchData = require('./fetch-data'); // Assuming you have a fetch-data.js module
+const { fetchData } = require('../../src/fetch-data');
 const request = require('supertest');
-const { app, server, fetchDataAndUpdate } = require('./index-one');
+const { app, server, fetchDataAndUpdate } = require('../../src/server');
 
-jest.mock('./fetch-data');
+jest.mock('../../src/fetch-data');
 
 describe('/metrics endpoint', () => {
-
     let dataFetchInterval;
-
+    let fetchInterval = 1000;
     beforeAll(() => {
         dataFetchInterval = setInterval(fetchDataAndUpdate, fetchInterval);
     });
@@ -18,13 +17,13 @@ describe('/metrics endpoint', () => {
     });
 
     it('should return fetched data', async () => {
-        const mockFetchedData = { metric: 'value' };
+        const mockFetchedData = 'Sample mock data';
         fetchData.mockResolvedValue(mockFetchedData);
         await fetchDataAndUpdate();
 
         const response = await request(app).get('/metrics');
 
         expect(response.status).toBe(200);
-        expect(response.body).toEqual(mockFetchedData);
+        expect(response.text).toEqual(mockFetchedData);
     });
 });
