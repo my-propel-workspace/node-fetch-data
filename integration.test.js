@@ -6,7 +6,14 @@ jest.mock('./fetch-data');
 
 describe('/metrics endpoint', () => {
 
+    let dataFetchInterval;
+
+    beforeAll(() => {
+        dataFetchInterval = setInterval(fetchDataAndUpdate, fetchInterval);
+    });
+
     afterAll((done) => {
+        clearInterval(dataFetchInterval);
         server.close(done);
     });
 
